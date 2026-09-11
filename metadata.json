@@ -1,0 +1,6 @@
+{
+  "name": "Agro-Deliveries Ke. BOS",
+  "description": "Internal Business Operating System and enterprise command center for Agro-Deliveries Ke. fresh produce distribution operations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
