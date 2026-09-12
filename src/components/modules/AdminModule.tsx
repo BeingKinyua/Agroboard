@@ -5,7 +5,8 @@ import {
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { UserRole, ModuleId, PermissionAction } from '../../types';
-import { Badge } from '../common/Badge';
+import { PageHeader } from '../common/PageHeader';
+import { StatusBadge } from '../common/StatusBadge';
 import { AdminInviteModal } from './AdminInviteModal';
 
 export const AdminModule: React.FC = () => {
@@ -15,7 +16,7 @@ export const AdminModule: React.FC = () => {
   const [selectedRoleForMatrix, setSelectedRoleForMatrix] = useState<UserRole>('operations_manager');
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
-  // RBAC Matrix Mock Interactive State
+  // RBAC Matrix Module List
   const modulesList: { id: ModuleId; label: string }[] = [
     { id: 'dashboard', label: 'Command Dashboard' },
     { id: 'orders', label: 'Orders & Dispatch' },
@@ -136,50 +137,62 @@ export const AdminModule: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-bold text-slate-900">Administration & Dynamic RBAC Governance</h2>
-          <p className="text-xs text-slate-500">Manage user accounts, granular role action matrix (View, Create, Edit, Approve, Delete, Export), and system parameters</p>
-        </div>
-      </div>
+    <div className="space-y-5 sm:space-y-6">
+      {/* Enterprise Page Header */}
+      <PageHeader
+        category="System Governance & Security"
+        title="Administration & Dynamic RBAC Governance"
+        description="Internal personnel directory, granular role action matrix (View, Create, Edit, Approve, Delete, Export), and regional hub configuration."
+        primaryAction={
+          activeTab === 'users' && (currentUser.role === 'admin' || currentUser.role === 'executive' || hasPermission('admin', 'create'))
+            ? {
+                label: 'Invite Member',
+                icon: <UserPlus className="w-4 h-4" />,
+                onClick: () => setIsInviteModalOpen(true),
+                variant: 'primary'
+              }
+            : undefined
+        }
+      />
 
       {/* Tabs */}
-      <div className="border-b border-slate-200 flex gap-6 text-xs font-medium">
+      <div className="border-b border-slate-200 flex gap-2 sm:gap-6 overflow-x-auto text-xs font-semibold select-none pb-px">
         <button
           onClick={() => setActiveTab('rbac')}
-          className={`pb-3 border-b-2 flex items-center gap-2 transition-colors ${
+          className={`pb-3 border-b-2 flex items-center gap-2 whitespace-nowrap px-1 transition-colors min-h-[44px] ${
             activeTab === 'rbac'
-              ? 'border-emerald-600 text-emerald-700 font-bold'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-emerald-600 text-emerald-700'
+              : 'border-transparent text-slate-500 hover:text-slate-900'
           }`}
+          aria-current={activeTab === 'rbac' ? 'page' : undefined}
         >
-          <Shield className="w-4 h-4" />
+          <Shield className="w-4 h-4 shrink-0" />
           <span>Role-Based Access Matrix (RBAC)</span>
         </button>
 
         <button
           onClick={() => setActiveTab('users')}
-          className={`pb-3 border-b-2 flex items-center gap-2 transition-colors ${
+          className={`pb-3 border-b-2 flex items-center gap-2 whitespace-nowrap px-1 transition-colors min-h-[44px] ${
             activeTab === 'users'
-              ? 'border-emerald-600 text-emerald-700 font-bold'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-emerald-600 text-emerald-700'
+              : 'border-transparent text-slate-500 hover:text-slate-900'
           }`}
+          aria-current={activeTab === 'users' ? 'page' : undefined}
         >
-          <Users className="w-4 h-4" />
+          <Users className="w-4 h-4 shrink-0" />
           <span>User Directory ({users.length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab('system')}
-          className={`pb-3 border-b-2 flex items-center gap-2 transition-colors ${
+          className={`pb-3 border-b-2 flex items-center gap-2 whitespace-nowrap px-1 transition-colors min-h-[44px] ${
             activeTab === 'system'
-              ? 'border-emerald-600 text-emerald-700 font-bold'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-emerald-600 text-emerald-700'
+              : 'border-transparent text-slate-500 hover:text-slate-900'
           }`}
+          aria-current={activeTab === 'system' ? 'page' : undefined}
         >
-          <Sliders className="w-4 h-4" />
+          <Sliders className="w-4 h-4 shrink-0" />
           <span>System & Hub Configuration</span>
         </button>
       </div>
@@ -198,10 +211,10 @@ export const AdminModule: React.FC = () => {
                 <button
                   key={r}
                   onClick={() => setSelectedRoleForMatrix(r)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors min-h-[36px] ${
                     selectedRoleForMatrix === r
-                      ? 'bg-emerald-600 text-white font-bold shadow-xs'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      ? 'bg-emerald-600 text-white shadow-2xs'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200/80'
                   }`}
                 >
                   {r.replace('_', ' ').toUpperCase()}
@@ -211,49 +224,52 @@ export const AdminModule: React.FC = () => {
           </div>
 
           <div className="bg-white rounded-xl border border-slate-200/80 shadow-2xs overflow-hidden">
-            <table className="w-full text-xs text-left">
-              <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
-                <tr>
-                  <th className="p-3.5">Module</th>
-                  {actionsList.map(act => (
-                    <th key={act} className="p-3.5 text-center uppercase text-[10px] tracking-wider">
-                      {act}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {modulesList.map(mod => {
-                  const perms = rolePermissions[selectedRoleForMatrix]?.[mod.id] || [];
-                  return (
-                    <tr key={mod.id} className="hover:bg-slate-50">
-                      <td className="p-3.5 font-bold text-slate-900">{mod.label}</td>
-                      {actionsList.map(act => {
-                        const hasAct = perms.includes(act);
-                        return (
-                          <td key={act} className="p-3.5 text-center">
-                            <button
-                              onClick={() => togglePermission(mod.id, act)}
-                              className={`p-1 rounded transition-colors ${
-                                hasAct
-                                  ? 'text-emerald-700 hover:text-emerald-800 bg-emerald-50'
-                                  : 'text-slate-300 hover:text-slate-400'
-                              }`}
-                            >
-                              {hasAct ? (
-                                <CheckSquare className="w-4 h-4 text-emerald-600" />
-                              ) : (
-                                <Square className="w-4 h-4" />
-                              )}
-                            </button>
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <div className="overflow-x-auto w-full touch-pan-x">
+              <table className="w-full text-xs text-left min-w-[650px]">
+                <thead className="bg-slate-50/90 text-slate-500 font-semibold border-b border-slate-200 text-[11px] uppercase tracking-wider">
+                  <tr>
+                    <th className="p-3.5">Module</th>
+                    {actionsList.map(act => (
+                      <th key={act} className="p-3.5 text-center uppercase text-[10px] tracking-wider">
+                        {act}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-700">
+                  {modulesList.map(mod => {
+                    const perms = rolePermissions[selectedRoleForMatrix]?.[mod.id] || [];
+                    return (
+                      <tr key={mod.id} className="hover:bg-slate-50/80 transition-colors">
+                        <td className="p-3.5 font-bold text-slate-900">{mod.label}</td>
+                        {actionsList.map(act => {
+                          const hasAct = perms.includes(act);
+                          return (
+                            <td key={act} className="p-3.5 text-center">
+                              <button
+                                onClick={() => togglePermission(mod.id, act)}
+                                className={`p-1.5 rounded-md transition-colors min-h-[32px] min-w-[32px] inline-flex items-center justify-center ${
+                                  hasAct
+                                    ? 'text-emerald-700 hover:text-emerald-800 bg-emerald-50'
+                                    : 'text-slate-300 hover:text-slate-500'
+                                }`}
+                                aria-label={`Toggle ${act} for ${mod.label}`}
+                              >
+                                {hasAct ? (
+                                  <CheckSquare className="w-4 h-4 text-emerald-600" />
+                                ) : (
+                                  <Square className="w-4 h-4" />
+                                )}
+                              </button>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
@@ -268,17 +284,6 @@ export const AdminModule: React.FC = () => {
                 Authoritative user registry. No public self-registration is permitted.
               </p>
             </div>
-
-            {(currentUser.role === 'admin' || currentUser.role === 'executive' || hasPermission('admin', 'create')) && (
-              <button
-                type="button"
-                onClick={() => setIsInviteModalOpen(true)}
-                className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition-colors"
-              >
-                <UserPlus className="w-4 h-4" />
-                <span>Invite Member</span>
-              </button>
-            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -287,19 +292,18 @@ export const AdminModule: React.FC = () => {
               const isInvited = statusStr.toLowerCase() === 'invited';
               const isActive = statusStr.toLowerCase() === 'active';
               return (
-                <div key={u.id} className="p-5 bg-white rounded-xl border border-slate-200/80 shadow-2xs space-y-3">
+                <div key={u.id} className="p-4 sm:p-5 bg-white rounded-xl border border-slate-200/80 shadow-2xs space-y-3">
                   <div className="flex items-center gap-3">
                     <img src={u.avatar} alt={u.name} className="w-10 h-10 rounded-full object-cover border border-slate-200" />
                     <div className="flex-1 min-w-0">
                       <h4 className="font-bold text-xs text-slate-900 truncate">{u.name}</h4>
                       <p className="text-[11px] text-slate-500 truncate">{u.email}</p>
                     </div>
-                    <Badge
-                      variant={isActive ? 'success' : isInvited ? 'warning' : 'neutral'}
+                    <StatusBadge
+                      status={isActive ? 'Delivered' : isInvited ? 'Pending' : 'Cancelled'}
+                      customLabel={isInvited ? 'Invited' : isActive ? 'Active' : 'Suspended'}
                       size="sm"
-                    >
-                      {isInvited ? 'Invited' : isActive ? 'Active' : 'Suspended'}
-                    </Badge>
+                    />
                   </div>
 
                   <div className="text-[11px] text-slate-500 space-y-1">
@@ -319,7 +323,7 @@ export const AdminModule: React.FC = () => {
                     <span className="text-slate-700 font-semibold text-[11px]">{u.roleTitle}</span>
                     <button
                       onClick={() => switchUserRole(u.role)}
-                      className="text-emerald-700 font-semibold hover:underline flex items-center gap-1 text-[11px]"
+                      className="text-emerald-700 font-semibold hover:underline flex items-center gap-1 text-[11px] min-h-[32px]"
                     >
                       <RefreshCw className="w-3 h-3" />
                       Simulate Role
@@ -367,12 +371,12 @@ export const AdminModule: React.FC = () => {
           <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-2xs space-y-3 text-xs">
             <h3 className="font-bold text-slate-900 uppercase tracking-wider text-xs">Operational Control Bounds</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-slate-700">
-              <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                <span className="font-bold block">Purchase Order Approval Threshold</span>
+              <div className="p-3.5 bg-slate-50 rounded-lg border border-slate-200">
+                <span className="font-bold block text-slate-900">Purchase Order Approval Threshold</span>
                 <span className="text-slate-500">Orders exceeding KES 50,000 route to Procurement Lead</span>
               </div>
-              <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                <span className="font-bold block">Stock Spoilage Approval Threshold</span>
+              <div className="p-3.5 bg-slate-50 rounded-lg border border-slate-200">
+                <span className="font-bold block text-slate-900">Stock Spoilage Approval Threshold</span>
                 <span className="text-slate-500">Losses exceeding KES 10,000 require Operations Manager signoff</span>
               </div>
             </div>

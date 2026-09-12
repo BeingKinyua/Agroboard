@@ -3,6 +3,7 @@ import { AppProvider, useApp } from './context/AppContext';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
 import { Breadcrumbs } from './components/layout/Breadcrumbs';
+import { MobileBottomNav } from './components/layout/MobileBottomNav';
 import { LoginPage } from './components/auth/LoginPage';
 
 // Global Modals & Drawers
@@ -168,11 +169,17 @@ const AppContent: React.FC = () => {
           isSidebarOpen={isMobileSidebarOpen}
         />
 
-        <main className="flex-1 p-4 lg:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 p-3.5 sm:p-5 lg:p-8 max-w-7xl w-full mx-auto pb-24 md:pb-8 overflow-x-hidden">
           <Breadcrumbs />
           {renderActiveModule()}
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation Dock */}
+      <MobileBottomNav 
+        onOpenMore={() => setIsMobileSidebarOpen(true)} 
+        isMoreOpen={isMobileSidebarOpen}
+      />
 
       {/* Global Modals & Drawers */}
       <GlobalSearchModal />

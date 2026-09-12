@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { 
   BarChart3, TrendingUp, DollarSign, Download, 
-  Printer, Calendar, Truck, Package, PieChart, ShieldCheck 
+  Printer, Calendar, Truck, Package, PieChart, ShieldCheck,
+  Percent, AlertCircle, Sparkles
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
-import { Badge } from '../common/Badge';
+import { PageHeader } from '../common/PageHeader';
+import { StatCard } from '../common/StatCard';
 
 export const ReportsModule: React.FC = () => {
   const { orders, products, customers, invoices } = useApp();
@@ -23,69 +25,96 @@ export const ReportsModule: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-bold text-slate-900">Executive Reports & Business Intelligence</h2>
-          <p className="text-xs text-slate-500">Margin benchmarks, fresh produce throughput, on-time SLA metrics, and customer profitability</p>
-        </div>
+    <div className="space-y-5 sm:space-y-6">
+      {/* Enterprise Page Header */}
+      <PageHeader
+        category="Executive Analytics & Operations BI"
+        title="Executive Reports & Business Intelligence"
+        description="Gross margin benchmarks, produce category volume throughput, on-time SLA fulfillment metrics, and segment profitability."
+        primaryAction={{
+          label: 'Print Briefing',
+          icon: <Printer className="w-4 h-4" />,
+          onClick: () => window.print(),
+          variant: 'secondary'
+        }}
+      />
 
-        <div className="flex items-center gap-2">
-          <select
-            value={dateRange}
-            onChange={e => setDateRange(e.target.value as any)}
-            className="p-2 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 shadow-2xs"
-          >
-            <option value="today">Today's Dispatch</option>
-            <option value="week">Current Week (W10)</option>
-            <option value="month">Month to Date (March 2026)</option>
-            <option value="quarter">Q1 2026</option>
-          </select>
-
-          <button
-            onClick={() => window.print()}
-            className="flex items-center gap-1.5 px-3 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
-          >
-            <Printer className="w-3.5 h-3.5" />
-            <span>Print Executive Briefing</span>
-          </button>
-        </div>
-      </div>
-
-      {/* KPI Overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-4 bg-white rounded-xl border border-slate-200/80 shadow-2xs">
-          <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Gross Distribution Sales</span>
-          <p className="text-2xl font-bold text-slate-900 mt-1">KES {totalSales.toLocaleString()}</p>
-          <span className="text-xs text-emerald-700 font-semibold mt-1 block">↑ 14.8% vs last period</span>
-        </div>
-
-        <div className="p-4 bg-white rounded-xl border border-slate-200/80 shadow-2xs">
-          <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Blended Gross Margin</span>
-          <p className="text-2xl font-bold text-emerald-700 mt-1">26.4%</p>
-          <span className="text-xs text-slate-400 mt-1 block">Institutional target: 24% – 28%</span>
-        </div>
-
-        <div className="p-4 bg-white rounded-xl border border-slate-200/80 shadow-2xs">
-          <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">On-Time Dawn Delivery SLA</span>
-          <p className="text-2xl font-bold text-slate-900 mt-1">98.2%</p>
-          <span className="text-xs text-emerald-700 font-semibold mt-1 block">Target met (05:00 - 07:00 AM)</span>
-        </div>
-
-        <div className="p-4 bg-white rounded-xl border border-slate-200/80 shadow-2xs">
-          <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Cold Chain Spoilage Rate</span>
-          <p className="text-2xl font-bold text-slate-900 mt-1">1.8%</p>
-          <span className="text-xs text-emerald-700 font-semibold mt-1 block">Below 2.5% spoilage cap</span>
+      {/* Date Range Selection Bar */}
+      <div className="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+        <span className="text-xs font-semibold text-slate-700">Reporting Horizon & Cohort:</span>
+        <div className="flex items-center gap-1.5 overflow-x-auto">
+          {[
+            { id: 'today', label: "Today's Dispatch" },
+            { id: 'week', label: 'Current Week (W10)' },
+            { id: 'month', label: 'Month to Date (March)' },
+            { id: 'quarter', label: 'Q1 2026 Fiscal' }
+          ].map(r => (
+            <button
+              key={r.id}
+              onClick={() => setDateRange(r.id as any)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors min-h-[36px] ${
+                dateRange === r.id
+                  ? 'bg-slate-900 text-white shadow-2xs'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
+              }`}
+            >
+              {r.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Category Performance Breakdown */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-2xs">
-          <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4">
-            Volume & Revenue Share by Produce Category
-          </h3>
+      {/* Primary KPI Overview Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+        <StatCard
+          title="Gross Distribution Sales"
+          value={`KES ${totalSales.toLocaleString()}`}
+          subtitle="Orders delivered & pending"
+          icon={TrendingUp}
+          trend={{ value: '14.8%', isPositive: true, label: 'vs last period' }}
+          accentColor="emerald"
+        />
+
+        <StatCard
+          title="Blended Gross Margin"
+          value="26.4%"
+          subtitle="Institutional target: 24% – 28%"
+          icon={Percent}
+          trend={{ value: '+1.2%', isPositive: true, label: 'above baseline' }}
+          accentColor="sky"
+        />
+
+        <StatCard
+          title="Dawn Delivery SLA"
+          value="98.2%"
+          subtitle="05:00 - 07:00 AM window"
+          icon={Truck}
+          trend={{ value: '98.2%', isPositive: true, label: 'on-time rate' }}
+          accentColor="emerald"
+        />
+
+        <StatCard
+          title="Cold Chain Spoilage Rate"
+          value="1.8%"
+          subtitle="Strict cap at 2.5%"
+          icon={AlertCircle}
+          trend={{ value: '-0.7%', isPositive: true, label: 'reduction' }}
+          accentColor="emerald"
+        />
+      </div>
+
+      {/* Category Performance Breakdown & Institutional Segments */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
+        {/* Category Share */}
+        <div className="bg-white rounded-xl border border-slate-200/80 p-4 sm:p-5 shadow-2xs">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">Volume & Revenue Share by Produce Category</h3>
+              <p className="text-xs text-slate-500">Distribution across major agricultural categories</p>
+            </div>
+            <PieChart className="w-4 h-4 text-slate-400" />
+          </div>
+
           <div className="space-y-4">
             {categoryStats.map((item, idx) => (
               <div key={idx} className="space-y-1.5 text-xs">
@@ -95,7 +124,7 @@ export const ReportsModule: React.FC = () => {
                 </div>
                 <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
                   <div
-                    className="bg-emerald-600 h-full rounded-full"
+                    className="bg-emerald-600 h-full rounded-full transition-all"
                     style={{ width: `${item.share}%` }}
                   />
                 </div>
@@ -105,24 +134,29 @@ export const ReportsModule: React.FC = () => {
         </div>
 
         {/* Customer Sector Contribution */}
-        <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-2xs">
-          <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4">
-            Institutional Segment Margin Breakdown
-          </h3>
+        <div className="bg-white rounded-xl border border-slate-200/80 p-4 sm:p-5 shadow-2xs">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">Institutional Segment Margin Breakdown</h3>
+              <p className="text-xs text-slate-500">Realized margins and total delivered bulk volume</p>
+            </div>
+            <BarChart3 className="w-4 h-4 text-slate-400" />
+          </div>
+
           <div className="space-y-3">
             {[
-              { segment: 'Schools & Academies', margin: '27.8%', volume: '14,200 KG', color: 'bg-emerald-50 text-emerald-800' },
-              { segment: 'Hospitals & Healthcare', margin: '29.1%', volume: '8,400 KG', color: 'bg-sky-50 text-sky-800' },
-              { segment: 'Hotels & Hospitality', margin: '31.4%', volume: '6,100 KG', color: 'bg-amber-50 text-amber-800' },
-              { segment: 'Restaurants & Cafes', margin: '24.2%', volume: '5,000 KG', color: 'bg-slate-100 text-slate-800' }
+              { segment: 'Schools & Academies', margin: '27.8%', volume: '14,200 KG', color: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
+              { segment: 'Hospitals & Healthcare', margin: '29.1%', volume: '8,400 KG', color: 'bg-sky-50 text-sky-800 border-sky-200' },
+              { segment: 'Hotels & Hospitality', margin: '31.4%', volume: '6,100 KG', color: 'bg-amber-50 text-amber-800 border-amber-200' },
+              { segment: 'Restaurants & Cafes', margin: '24.2%', volume: '5,000 KG', color: 'bg-slate-100 text-slate-800 border-slate-200' }
             ].map((seg, idx) => (
-              <div key={idx} className="p-3 rounded-lg border border-slate-200 flex items-center justify-between text-xs">
+              <div key={idx} className="p-3.5 rounded-lg border border-slate-200/80 flex items-center justify-between text-xs hover:border-slate-300 transition-colors">
                 <div>
                   <p className="font-bold text-slate-900">{seg.segment}</p>
-                  <p className="text-[11px] text-slate-500">Delivered Volume: {seg.volume}</p>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Delivered Bulk Volume: {seg.volume}</p>
                 </div>
                 <div className="text-right">
-                  <span className={`px-2 py-0.5 rounded font-bold ${seg.color}`}>
+                  <span className={`px-2.5 py-1 rounded-full font-bold border text-xs ${seg.color}`}>
                     {seg.margin} Margin
                   </span>
                 </div>
