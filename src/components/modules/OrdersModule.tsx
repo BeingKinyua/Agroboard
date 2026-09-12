@@ -50,13 +50,13 @@ export const OrdersModule: React.FC = () => {
     'Invoiced'
   ];
 
-  const uniqueZones = Array.from(new Set(orders.map(o => o.deliveryZone)));
+  const uniqueZones = Array.from(new Set(orders.map(o => o.deliveryZone).filter((z): z is string => Boolean(z))));
 
   const filteredOrders = orders.filter(o => {
     const matchesSearch = 
       o.orderNumber.toLowerCase().includes(search.toLowerCase()) ||
       o.customerName.toLowerCase().includes(search.toLowerCase()) ||
-      o.deliveryZone.toLowerCase().includes(search.toLowerCase());
+      (o.deliveryZone || '').toLowerCase().includes(search.toLowerCase());
     const matchesStatus = selectedStatus === 'all' || o.status === selectedStatus;
     const matchesZone = selectedZone === 'all' || o.deliveryZone === selectedZone;
     return matchesSearch && matchesStatus && matchesZone;
@@ -210,9 +210,9 @@ export const OrdersModule: React.FC = () => {
               onChange={e => setSelectedZone(e.target.value)}
               className="py-1.5 px-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-700 focus:outline-none focus:ring-1 focus:ring-emerald-500"
             >
-              <option value="all">All Delivery Zones</option>
+              <option key="all" value="all">All Delivery Zones</option>
               {uniqueZones.map(z => (
-                <option key={z} value={z}>{z}</option>
+                <option key={`zone-${z}`} value={z}>{z}</option>
               ))}
             </select>
           </div>
@@ -403,9 +403,9 @@ export const OrdersModule: React.FC = () => {
               onChange={e => setSelectedZone(e.target.value)}
               className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs"
             >
-              <option value="all">All Delivery Zones</option>
+              <option key="all" value="all">All Delivery Zones</option>
               {uniqueZones.map(z => (
-                <option key={z} value={z}>{z}</option>
+                <option key={`drawer-zone-${z}`} value={z}>{z}</option>
               ))}
             </select>
           </div>

@@ -795,6 +795,7 @@ export const INITIAL_ORDERS: Order[] = [
     deliveryDate: '2026-09-12',
     deliverySlot: '05:00 AM - 07:00 AM',
     deliveryAddress: 'Brookhouse School, Runda Campus Kitchen',
+    deliveryZone: 'Nairobi North / Runda',
     deliveryRunId: 'run-1',
     paymentStatus: 'Credit',
     invoiceId: 'inv-101'
@@ -820,6 +821,7 @@ export const INITIAL_ORDERS: Order[] = [
     deliveryDate: '2026-09-12',
     deliverySlot: '05:00 AM - 07:00 AM',
     deliveryAddress: 'Nairobi Hospital, Kitchen Receiving Dock, Argwings Kodhek Rd',
+    deliveryZone: 'Upper Hill & Hurlingham',
     deliveryRunId: 'run-2',
     paymentStatus: 'Credit',
     invoiceId: 'inv-102'
@@ -844,6 +846,7 @@ export const INITIAL_ORDERS: Order[] = [
     deliveryDate: '2026-09-11',
     deliverySlot: '05:00 AM - 07:00 AM',
     deliveryAddress: 'Serena Hotel Goods Entrance, Kenyatta Ave',
+    deliveryZone: 'Nairobi CBD',
     deliveryRunId: 'run-3',
     paymentStatus: 'Credit',
     invoiceId: 'inv-103'
@@ -868,6 +871,7 @@ export const INITIAL_ORDERS: Order[] = [
     deliveryDate: '2026-09-11',
     deliverySlot: '08:00 AM - 11:00 AM',
     deliveryAddress: 'Valley Arcade Shopping Centre, Gitanga Rd',
+    deliveryZone: 'Lavington & Kileleshwa',
     deliveryRunId: 'run-2',
     paymentStatus: 'Paid',
     invoiceId: 'inv-104'
@@ -892,6 +896,7 @@ export const INITIAL_ORDERS: Order[] = [
     deliveryDate: '2026-09-13',
     deliverySlot: '08:00 AM - 11:00 AM',
     deliveryAddress: 'Strathmore School, Mzima Springs Rd, Kitchen',
+    deliveryZone: 'Lavington & Kileleshwa',
     paymentStatus: 'Unpaid'
   }
 ];
